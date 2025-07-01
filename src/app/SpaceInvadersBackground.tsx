@@ -16,11 +16,21 @@ const CANNON = (
   </svg>
 );
 
+// Explosion type
+const EXPLOSION_DURATION = 500; // ms
+interface Explosion {
+  x: number;
+  y: number;
+  start: number;
+}
+
 export default function SpaceInvadersBackground() {
   const [ufos, setUfos] = useState<{x: number, y: number, alive: boolean}[]>([]);
   const [lasers, setLasers] = useState<{x: number, y: number}[]>([]);
   const [cannonX, setCannonX] = useState(200);
   const [stars, setStars] = useState<{x: number, y: number, size: number, speed: number, opacity: number}[]>([]);
+  const [twinklePhase, setTwinklePhase] = useState(0);
+  const [explosions, setExplosions] = useState<Explosion[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Spawn UFOs
@@ -44,7 +54,7 @@ export default function SpaceInvadersBackground() {
     return () => clearInterval(id);
   }, []);
 
-  // Collision detection
+  // Collision detection (add explosion)
   useEffect(() => {
     setUfos(prevUfos => prevUfos.map(ufo => {
       if (!ufo.alive) return ufo;
@@ -53,12 +63,26 @@ export default function SpaceInvadersBackground() {
           laser.x > ufo.x && laser.x < ufo.x + 32 &&
           laser.y > ufo.y && laser.y < ufo.y + 20
         ) {
+          // Add explosion at UFO position
+          setExplosions(explosions => [
+            ...explosions,
+            { x: ufo.x + 16, y: ufo.y + 10, start: Date.now() }
+          ]);
           ufo.alive = false;
         }
       }
       return ufo;
     }));
   }, [lasers]);
+
+  // Remove old explosions
+  useEffect(() => {
+    if (explosions.length === 0) return;
+    const id = setInterval(() => {
+      setExplosions(explosions => explosions.filter(e => Date.now() - e.start < EXPLOSION_DURATION));
+    }, 60);
+    return () => clearInterval(id);
+  }, [explosions]);
 
   // Remove dead UFOs
   useEffect(() => {
@@ -110,6 +134,12 @@ export default function SpaceInvadersBackground() {
     return () => clearInterval(id);
   }, []);
 
+  // Twinkling stars: add a twinkle phase
+  useEffect(() => {
+    const id = setInterval(() => setTwinklePhase(p => (p + 1) % 1000), 80);
+    return () => clearInterval(id);
+  }, []);
+
   return (
     <div ref={containerRef} style={{
       position: "fixed",
@@ -123,66 +153,104 @@ export default function SpaceInvadersBackground() {
       background: "radial-gradient(ellipse at 60% 20%, #222 60%, #000 100%)",
       backgroundColor: "#000"
     }}>
-      {/* Animated star field */}
-      {stars.map((star, i) => (
-        <div key={i} style={{
-          position: "absolute",
-          left: star.x,
-          top: star.y,
-          width: star.size,
-          height: star.size,
-          background: "#fff",
-          opacity: star.opacity,
-          borderRadius: "50%",
-          filter: "blur(0.5px)"
-        }} />
-      ))}
-      {/* Galaxies */}
-      <div style={{
+      {/* Animated star field with twinkle */}
+      {stars.map((star, i) => {
+        // Twinkle effect: modulate opacity with a sine wave
+        const twinkle = 0.5 + 0.5 * Math.sin((twinklePhase + i * 37) * 0.07 + star.x * 0.01);
+        return (
+          <div key={i} style={{
+            position: "absolute",
+            left: star.x,
+            top: star.y,
+            width: star.size,
+            height: star.size,
+            background: "#fff",
+            opacity: Math.max(0, Math.min(1, star.opacity * (0.7 + 0.6 * twinkle))),
+            borderRadius: "50%",
+            filter: "blur(0.5px)"
+          }} />
+        );
+      })}
+      {/* Animated galaxies (rotating) */}
+      <svg style={{
         position: "absolute",
         left: window.innerWidth * 0.15,
         top: window.innerHeight * 0.18,
         width: 120,
         height: 60,
-        background: "radial-gradient(ellipse at 60% 40%, #fff8 0%, #aaf4 40%, #00f2 80%, #0000 100%)",
-        filter: "blur(8px)",
-        borderRadius: "50%",
-        pointerEvents: "none"
-      }} />
-      <div style={{
+        pointerEvents: "none",
+        transform: `rotate(${twinklePhase * 0.03}deg)`
+      }} viewBox="0 0 120 60">
+        <ellipse cx="60" cy="30" rx="55" ry="22" fill="url(#galaxy1)" filter="url(#blur1)" />
+        <defs>
+          <radialGradient id="galaxy1">
+            <stop offset="0%" stopColor="#fff" stopOpacity="0.8" />
+            <stop offset="40%" stopColor="#aaf" stopOpacity="0.4" />
+            <stop offset="80%" stopColor="#00f" stopOpacity="0.2" />
+            <stop offset="100%" stopColor="#000" stopOpacity="0" />
+          </radialGradient>
+          <filter id="blur1"><feGaussianBlur stdDeviation="8" /></filter>
+        </defs>
+      </svg>
+      <svg style={{
         position: "absolute",
         left: window.innerWidth * 0.7,
         top: window.innerHeight * 0.3,
         width: 90,
         height: 40,
-        background: "radial-gradient(ellipse at 40% 60%, #fff6 0%, #f0f4 40%, #f0f2 80%, #0000 100%)",
-        filter: "blur(10px)",
-        borderRadius: "50%",
-        pointerEvents: "none"
-      }} />
-      {/* Nebulae */}
-      <div style={{
+        pointerEvents: "none",
+        transform: `rotate(${-twinklePhase * 0.025}deg)`
+      }} viewBox="0 0 90 40">
+        <ellipse cx="45" cy="20" rx="40" ry="15" fill="url(#galaxy2)" filter="url(#blur2)" />
+        <defs>
+          <radialGradient id="galaxy2">
+            <stop offset="0%" stopColor="#fff" stopOpacity="0.7" />
+            <stop offset="40%" stopColor="#f0f" stopOpacity="0.3" />
+            <stop offset="80%" stopColor="#0ff" stopOpacity="0.2" />
+            <stop offset="100%" stopColor="#000" stopOpacity="0" />
+          </radialGradient>
+          <filter id="blur2"><feGaussianBlur stdDeviation="7" /></filter>
+        </defs>
+      </svg>
+      {/* Animated nebulae (pulsating) */}
+      <svg style={{
         position: "absolute",
         left: window.innerWidth * 0.4,
         top: window.innerHeight * 0.6,
         width: 180,
         height: 90,
-        background: "radial-gradient(ellipse at 60% 40%, #0ff4 0%, #0ff2 60%, #0000 100%)",
-        filter: "blur(18px)",
-        borderRadius: "50%",
-        pointerEvents: "none"
-      }} />
-      <div style={{
+        pointerEvents: "none",
+        opacity: 0.7 + 0.2 * Math.sin(twinklePhase * 0.02)
+      }} viewBox="0 0 180 90">
+        <ellipse cx="90" cy="45" rx="80" ry="35" fill="url(#nebula1)" filter="url(#blur3)" />
+        <defs>
+          <radialGradient id="nebula1">
+            <stop offset="0%" stopColor="#0ff" stopOpacity="0.5" />
+            <stop offset="60%" stopColor="#0ff" stopOpacity="0.2" />
+            <stop offset="100%" stopColor="#000" stopOpacity="0" />
+          </radialGradient>
+          <filter id="blur3"><feGaussianBlur stdDeviation="18" /></filter>
+        </defs>
+      </svg>
+      <svg style={{
         position: "absolute",
         left: window.innerWidth * 0.8,
         top: window.innerHeight * 0.8,
         width: 120,
         height: 60,
-        background: "radial-gradient(ellipse at 40% 60%, #f0f4 0%, #aaf2 60%, #0000 100%)",
-        filter: "blur(16px)",
-        borderRadius: "50%",
-        pointerEvents: "none"
-      }} />
+        pointerEvents: "none",
+        opacity: 0.6 + 0.3 * Math.cos(twinklePhase * 0.018)
+      }} viewBox="0 0 120 60">
+        <ellipse cx="60" cy="30" rx="55" ry="22" fill="url(#nebula2)" filter="url(#blur4)" />
+        <defs>
+          <radialGradient id="nebula2">
+            <stop offset="0%" stopColor="#f0f" stopOpacity="0.4" />
+            <stop offset="60%" stopColor="#aaf" stopOpacity="0.2" />
+            <stop offset="100%" stopColor="#000" stopOpacity="0" />
+          </radialGradient>
+          <filter id="blur4"><feGaussianBlur stdDeviation="16" /></filter>
+        </defs>
+      </svg>
       {ufos.map((ufo, i) => ufo.alive && (
         <div key={i} style={{position: "absolute", left: ufo.x, top: ufo.y, width: 32, height: 20}}>
           {UFO}
@@ -194,6 +262,49 @@ export default function SpaceInvadersBackground() {
       <div style={{position: "absolute", left: cannonX, top: window.innerHeight - 48, width: 60, height: 36}}>
         {CANNON}
       </div>
+      {/* Explosions */}
+      {explosions.map((e, i) => {
+        const t = Math.min(1, (Date.now() - e.start) / EXPLOSION_DURATION);
+        const scale = 1 + t * 2.2;
+        const opacity = 1 - t;
+        // Flicker for fire effect
+        const flicker = 0.9 + 0.2 * Math.sin(Date.now() * 0.04 + i * 7);
+        return (
+          <svg key={i} style={{
+            position: "absolute",
+            left: e.x - 22 * scale,
+            top: e.y - 22 * scale,
+            width: 44 * scale,
+            height: 44 * scale,
+            pointerEvents: "none",
+            opacity: opacity * flicker,
+            zIndex: 2
+          }} viewBox="0 0 44 44">
+            {/* Outer glow */}
+            <circle cx="22" cy="22" r={16 + 8 * t} fill="#fff" fillOpacity={0.18 * (1-t)} />
+            {/* Fire: animated orange/yellow flicker */}
+            <radialGradient id={`fire${i}`} cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#fff" stopOpacity="0.9" />
+              <stop offset="40%" stopColor="#ff0" stopOpacity="0.7" />
+              <stop offset="70%" stopColor="#fa0" stopOpacity="0.7" />
+              <stop offset="100%" stopColor="#f00" stopOpacity="0.3" />
+            </radialGradient>
+            <circle cx="22" cy="22" r={10 + 7 * t * flicker} fill={`url(#fire${i})`} />
+            {/* Red core */}
+            <circle cx="22" cy="22" r={5 + 3 * t * flicker} fill="#f00" fillOpacity={0.7 * (1-t)} />
+            {/* White flash core */}
+            <circle cx="22" cy="22" r={3 + 2 * (1-t)} fill="#fff" fillOpacity={0.7 * (1-t)} />
+            {/* Fire sparks */}
+            {[...Array(7)].map((_, j) => {
+              const angle = (j / 7) * 2 * Math.PI + t * 2 + i;
+              const r = 13 + 10 * t * Math.random();
+              return <circle key={j} cx={22 + Math.cos(angle) * r} cy={22 + Math.sin(angle) * r} r={1.2 + Math.random()} fill="#ff0" fillOpacity={0.7 * (1-t)} />;
+            })}
+            {/* Smoke */}
+            <ellipse cx="22" cy="22" rx={10 + 12 * t} ry={6 + 10 * t} fill="#888" fillOpacity={0.13 * (1-t)} />
+          </svg>
+        );
+      })}
     </div>
   );
 }
