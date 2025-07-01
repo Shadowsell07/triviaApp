@@ -457,6 +457,96 @@ const questions: Question[] = [
       { text: "Skull", isCorrect: false },
     ],
   },
+  {
+    text: "What is the only even prime number?",
+    answers: [
+      { text: "2", isCorrect: true },
+      { text: "4", isCorrect: false },
+      { text: "0", isCorrect: false },
+      { text: "6", isCorrect: false },
+    ],
+  },
+  {
+    text: "Which element has the highest melting point?",
+    answers: [
+      { text: "Tungsten", isCorrect: true },
+      { text: "Iron", isCorrect: false },
+      { text: "Carbon", isCorrect: false },
+      { text: "Osmium", isCorrect: false },
+    ],
+  },
+  {
+    text: "Who was the first person to win two Nobel Prizes?",
+    answers: [
+      { text: "Marie Curie", isCorrect: true },
+      { text: "Linus Pauling", isCorrect: false },
+      { text: "Albert Einstein", isCorrect: false },
+      { text: "John Bardeen", isCorrect: false },
+    ],
+  },
+  {
+    text: "What is the smallest country in the world by area?",
+    answers: [
+      { text: "Vatican City", isCorrect: true },
+      { text: "Monaco", isCorrect: false },
+      { text: "Nauru", isCorrect: false },
+      { text: "San Marino", isCorrect: false },
+    ],
+  },
+  {
+    text: "Which mathematician proved Fermat's Last Theorem in 1994?",
+    answers: [
+      { text: "Andrew Wiles", isCorrect: true },
+      { text: "Pierre de Fermat", isCorrect: false },
+      { text: "Leonhard Euler", isCorrect: false },
+      { text: "Carl Gauss", isCorrect: false },
+    ],
+  },
+  {
+    text: "What is the rarest naturally occurring element on Earth?",
+    answers: [
+      { text: "Astatine", isCorrect: true },
+      { text: "Francium", isCorrect: false },
+      { text: "Promethium", isCorrect: false },
+      { text: "Rhenium", isCorrect: false },
+    ],
+  },
+  {
+    text: "Which planet has the longest day (rotation period) in the solar system?",
+    answers: [
+      { text: "Venus", isCorrect: true },
+      { text: "Mercury", isCorrect: false },
+      { text: "Jupiter", isCorrect: false },
+      { text: "Saturn", isCorrect: false },
+    ],
+  },
+  {
+    text: "What is the only letter not appearing in any U.S. state name?",
+    answers: [
+      { text: "Q", isCorrect: true },
+      { text: "X", isCorrect: false },
+      { text: "Z", isCorrect: false },
+      { text: "J", isCorrect: false },
+    ],
+  },
+  {
+    text: "Which chess piece can only move diagonally?",
+    answers: [
+      { text: "Bishop", isCorrect: true },
+      { text: "Queen", isCorrect: false },
+      { text: "Rook", isCorrect: false },
+      { text: "Pawn", isCorrect: false },
+    ],
+  },
+  {
+    text: "What is the name of the paradox where a cat is both alive and dead?",
+    answers: [
+      { text: "Schrödinger's Cat", isCorrect: true },
+      { text: "Zeno's Paradox", isCorrect: false },
+      { text: "Fermi Paradox", isCorrect: false },
+      { text: "Russell's Paradox", isCorrect: false },
+    ],
+  },
 ];
 
 // Shared in-memory question set for the current game session
@@ -536,6 +626,8 @@ export default function Home() {
       await supabase.from('lobby').insert([{ name: trimmed }]);
       setPlayerName(trimmed);
       setAnswers(a => ({ ...a, [trimmed]: [] }));
+      // Optimistically add to lobby for instant feedback
+      setLobby(prev => [...prev, trimmed]);
     }
   };
 
