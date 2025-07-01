@@ -31,6 +31,9 @@ export default function SpaceInvadersBackground() {
   const [stars, setStars] = useState<{x: number, y: number, size: number, speed: number, opacity: number}[]>([]);
   const [twinklePhase, setTwinklePhase] = useState(0);
   const [explosions, setExplosions] = useState<Explosion[]>([]);
+  const [showTitle, setShowTitle] = useState(true);
+  const [titleOpacity, setTitleOpacity] = useState(1);
+  const [titleScale, setTitleScale] = useState(0.6);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Spawn UFOs
@@ -47,7 +50,18 @@ export default function SpaceInvadersBackground() {
   // Move UFOs and lasers
   useEffect(() => {
     const move = () => {
-      setUfos(prev => prev.map(ufo => ({ ...ufo, y: ufo.y + 2 })));
+      setUfos(prev => prev.map((ufo, idx) => {
+        // Add horizontal oscillation and occasional upward floating
+        const t = Date.now() / 900 + idx * 0.7;
+        const floatX = Math.sin(t) * 24; // horizontal oscillation
+        let newX = ufo.x + floatX * 0.04; // slow drift
+        // Clamp to screen
+        newX = Math.max(0, Math.min(window.innerWidth - 32, newX));
+        // Occasionally float up
+        let newY = ufo.y + 2;
+        if (Math.random() < 0.01) newY -= 6 * Math.random();
+        return { ...ufo, x: newX, y: newY };
+      }));
       setLasers(prev => prev.map(l => ({ ...l, y: l.y - 8 })).filter(l => l.y > -24));
     };
     const id = setInterval(move, 30);
@@ -139,6 +153,56 @@ export default function SpaceInvadersBackground() {
     const id = setInterval(() => setTwinklePhase(p => (p + 1) % 1000), 80);
     return () => clearInterval(id);
   }, []);
+
+  // Add Star Wars font import to the head if not already present
+  if (typeof window !== "undefined") {
+    const id = "starwars-font-link";
+    if (!document.getElementById(id)) {
+      const link = document.createElement("link");
+      link.id = id;
+      link.rel = "stylesheet";
+      link.href = "https://fonts.googleapis.com/css2?family=Orbitron:wght@900&display=swap";
+      document.head.appendChild(link);
+    }
+  }
+
+  // Fade out and hide title after 15 seconds
+  useEffect(() => {
+    if (!showTitle) return;
+    const fadeStart = setTimeout(() => {
+      let fade = 1;
+      const fadeInterval = setInterval(() => {
+        fade -= 0.04;
+        setTitleOpacity(Math.max(0, fade));
+        if (fade <= 0) {
+          setShowTitle(false);
+          clearInterval(fadeInterval);
+        }
+      }, 50);
+    }, 15000);
+    return () => clearTimeout(fadeStart);
+  }, [showTitle]);
+
+  // Animate title fade-in and pop-up
+  useEffect(() => {
+    if (!showTitle) return;
+    let scale = 0.6;
+    let opacity = 0;
+    setTitleScale(scale);
+    setTitleOpacity(opacity);
+    // Pop-in animation: scale and fade in
+    const popDuration = 1200; // ms
+    const start = Date.now();
+    const popAnim = setInterval(() => {
+      const t = Math.min(1, (Date.now() - start) / popDuration);
+      // Ease out back for pop effect
+      const ease = t < 1 ? (1 + 1.7 * Math.pow(t-1, 3) + 0.7 * Math.pow(t-1, 2)) : 1;
+      setTitleScale(0.6 + 0.5 * ease);
+      setTitleOpacity(t);
+      if (t >= 1) clearInterval(popAnim);
+    }, 16);
+    return () => clearInterval(popAnim);
+  }, [showTitle]);
 
   return (
     <div ref={containerRef} style={{
@@ -305,6 +369,27 @@ export default function SpaceInvadersBackground() {
           </svg>
         );
       })}
+      {/* Star Wars style title */}
+      {showTitle && (
+        <div style={{
+          position: "absolute",
+          top: 32,
+          left: "50%",
+          transform: `translateX(-50%) scale(${titleScale})`,
+          zIndex: 10,
+          fontFamily: 'Orbitron, "Arial Black", Arial, sans-serif',
+          fontWeight: 900,
+          fontSize: 48,
+          letterSpacing: 4,
+          color: "#ffe81f",
+          textShadow: "0 0 16px #fff, 0 0 32px #ffe81f, 0 0 8px #000",
+          opacity: titleOpacity,
+          transition: "opacity 0.5s linear, transform 0.5s cubic-bezier(.23,1.5,.32,1)",
+          willChange: "opacity, transform"
+        }}>
+          BUY-IONIC TRIVIA
+        </div>
+      )}
     </div>
   );
 }
