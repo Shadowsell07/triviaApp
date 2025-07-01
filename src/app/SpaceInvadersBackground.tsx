@@ -34,6 +34,8 @@ export default function SpaceInvadersBackground() {
   const [showTitle, setShowTitle] = useState(true);
   const [titleOpacity, setTitleOpacity] = useState(1);
   const [titleScale, setTitleScale] = useState(0.6);
+  const [invaderScore, setInvaderScore] = useState(0);
+  const [showGameInstructions, setShowGameInstructions] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Spawn UFOs
@@ -82,6 +84,7 @@ export default function SpaceInvadersBackground() {
             ...explosions,
             { x: ufo.x + 16, y: ufo.y + 10, start: Date.now() }
           ]);
+          setInvaderScore(score => score + 10);
           ufo.alive = false;
         }
       }
@@ -203,6 +206,18 @@ export default function SpaceInvadersBackground() {
     }, 16);
     return () => clearInterval(popAnim);
   }, [showTitle]);
+
+  // Listen for arrow/spacebar to hide instructions
+  useEffect(() => {
+    if (!showGameInstructions) return;
+    const hideInstructions = (e: KeyboardEvent) => {
+      if (["ArrowLeft", "ArrowRight", "ArrowUp", " "].includes(e.key)) {
+        setShowGameInstructions(false);
+      }
+    };
+    window.addEventListener("keydown", hideInstructions);
+    return () => window.removeEventListener("keydown", hideInstructions);
+  }, [showGameInstructions]);
 
   return (
     <div ref={containerRef} style={{
@@ -369,6 +384,43 @@ export default function SpaceInvadersBackground() {
           </svg>
         );
       })}
+      {/* Space Invader Score */}
+      <div style={{
+        position: "absolute",
+        top: 24,
+        left: 24,
+        zIndex: 20,
+        fontFamily: 'Orbitron, "Arial Black", Arial, sans-serif',
+        fontWeight: 900,
+        fontSize: 28,
+        color: "#0ff",
+        textShadow: "0 0 8px #fff, 0 0 16px #0ff",
+        background: "rgba(0,0,0,0.4)",
+        borderRadius: 8,
+        padding: "6px 18px"
+      }}>
+        Score: {invaderScore}
+      </div>
+      {/* Game Instructions */}
+      {showGameInstructions && (
+        <div style={{
+          position: "absolute",
+          left: 24,
+          bottom: 32,
+          zIndex: 20,
+          fontFamily: 'Orbitron, "Arial Black", Arial, sans-serif',
+          fontWeight: 700,
+          fontSize: 20,
+          color: "#fff",
+          background: "rgba(0,0,0,0.7)",
+          borderRadius: 8,
+          padding: "10px 18px",
+          maxWidth: 340,
+          boxShadow: "0 0 12px #0ff4"
+        }}>
+          Use the arrows to move left and right, and the space bar to shoot.
+        </div>
+      )}
       {/* Star Wars style title */}
       {showTitle && (
         <div style={{
