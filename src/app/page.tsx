@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import SpaceInvadersBackground from "./SpaceInvadersBackground";
+import { supabase } from './supabaseClient';
 
 interface Answer {
   text: string;
@@ -507,6 +508,37 @@ export default function Home() {
     return () => clearInterval(timer);
   }, [timeLeft, isTimerRunning]);
 
+  // Fetch lobby on mount and subscribe to changes
+  useEffect(() => {
+    let ignore = false;
+    async function fetchLobby() {
+      const { data } = await supabase.from('lobby').select('name').order('joined_at');
+      if (!ignore && data) setLobby(data.map((row: any) => row.name));
+    }
+    fetchLobby();
+    // Real-time subscription
+    const channel = supabase
+      .channel('lobby-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'lobby' }, payload => {
+        fetchLobby();
+      })
+      .subscribe();
+    return () => {
+      ignore = true;
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  // Join lobby (insert into Supabase)
+  const handleJoinLobby = async () => {
+    const trimmed = nameInput.trim();
+    if (trimmed && !lobby.includes(trimmed)) {
+      await supabase.from('lobby').insert([{ name: trimmed }]);
+      setPlayerName(trimmed);
+      setAnswers(a => ({ ...a, [trimmed]: [] }));
+    }
+  };
+
   // Lobby: Enter name and join
   if (!playerName && !gameStarted) {
     return (
@@ -526,14 +558,7 @@ export default function Home() {
           <button
             className="bg-blue-500 text-white px-4 py-2 rounded w-full mb-2 disabled:opacity-50"
             disabled={!nameInput.trim() || lobby.includes(nameInput.trim())}
-            onClick={() => {
-              const trimmed = nameInput.trim();
-              if (trimmed && !lobby.includes(trimmed)) {
-                setPlayerName(trimmed);
-                setLobby([...lobby, trimmed]);
-                setAnswers(a => ({ ...a, [trimmed]: [] }));
-              }
-            }}
+            onClick={handleJoinLobby}
           >
             Join Lobby
           </button>
