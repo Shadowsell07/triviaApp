@@ -1,3 +1,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.bg-animated-gradient {
+  background: linear-gradient(-45deg, #0f2027, #2c5364, #00c6ff, #0072ff);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+}
+
+@keyframes gradientBG {
+  0% {background-position: 0% 50%;}
+  50% {background-position: 100% 50%;}
+  100% {background-position: 0% 50%;}
+}
+
+.bg-matrix {
+  background-color: #18181b;
+  background-image: radial-gradient(#00c6ff 1px, transparent 1px), radial-gradient(#0072ff 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
+}

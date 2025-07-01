@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import SpaceInvadersBackground from "./SpaceInvadersBackground";
 
 interface Answer {
   text: string;
@@ -227,8 +228,9 @@ export default function Home() {
   // Lobby: Enter name and join
   if (!playerName && !gameStarted) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md text-center">
+      <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+        <SpaceInvadersBackground />
+        <div className="bg-white bg-opacity-90 p-8 rounded-lg shadow-lg w-full max-w-md text-center relative z-10">
           <h2 className="text-2xl font-bold mb-4">Enter Your Name to Join</h2>
           <input
             type="text"
@@ -260,9 +262,18 @@ export default function Home() {
 
   // Show lobby for joined players until game starts
   if (playerName && !gameStarted) {
+    const handleStartGame = () => {
+      setCurrentQuestion(0);
+      setSelectedAnswer(null);
+      setTimeLeft(10);
+      setIsTimerRunning(true);
+      setScore(0);
+      setGameStarted(true);
+    };
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md text-center">
+      <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+        <SpaceInvadersBackground />
+        <div className="bg-white bg-opacity-90 p-8 rounded-lg shadow-lg w-full max-w-md text-center relative z-10">
           <h2 className="text-2xl font-bold mb-4">Waiting in Lobby</h2>
           <div className="mb-4">Share this link with your team. When everyone has joined, click Start Game.</div>
           <div className="text-left mb-4">
@@ -276,7 +287,7 @@ export default function Home() {
           <button
             className="mt-6 bg-green-600 text-white px-4 py-2 rounded w-full disabled:opacity-50"
             disabled={lobby.length < 1}
-            onClick={() => setGameStarted(true)}
+            onClick={handleStartGame}
           >
             Start Game
           </button>
@@ -317,8 +328,9 @@ export default function Home() {
     });
     allScores.sort((a, b) => b.score - a.score);
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="bg-white p-8 rounded-lg shadow-lg text-center">
+      <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+        <SpaceInvadersBackground />
+        <div className="bg-white bg-opacity-90 p-8 rounded-lg shadow-lg text-center relative z-10">
           <h2 className="text-2xl font-bold mb-4">Game Over!</h2>
           <div className="mb-4 text-lg font-semibold">Scores:</div>
           <ul className="mb-4">
@@ -337,8 +349,9 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+      <SpaceInvadersBackground />
+      <div className="bg-white bg-opacity-90 p-8 rounded-lg shadow-lg w-full max-w-2xl relative z-10">
         <div className="flex justify-between items-center mb-6">
           <div className="text-lg font-semibold">
             Question {currentQuestion + 1}/{questions.length}
