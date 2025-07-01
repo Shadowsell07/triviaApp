@@ -458,6 +458,9 @@ const questions: Question[] = [
   },
 ];
 
+// Shared in-memory question set for the current game session
+let sharedShuffledQuestions: Question[] | null = null;
+
 // Shuffle function
 function shuffle<T>(array: T[]): T[] {
   const arr = [...array];
@@ -481,6 +484,13 @@ export default function Home() {
   const [score, setScore] = useState(0);
   const [answers, setAnswers] = useState<{ [player: string]: number[] }>({});
   const [randomizedQuestions, setRandomizedQuestions] = useState<Question[]>([]);
+
+  // When game starts, use shared questions if available
+  useEffect(() => {
+    if (gameStarted && sharedShuffledQuestions) {
+      setRandomizedQuestions(sharedShuffledQuestions);
+    }
+  }, [gameStarted]);
 
   useEffect(() => {
     if (timeLeft === 0) {
@@ -540,8 +550,11 @@ export default function Home() {
       setTimeLeft(10);
       setIsTimerRunning(true);
       setScore(0);
-      // Shuffle and select 20 questions
-      setRandomizedQuestions(shuffle(questions).slice(0, 20));
+      // Only shuffle and set shared questions if not already set
+      if (!sharedShuffledQuestions) {
+        sharedShuffledQuestions = shuffle(questions).slice(0, 20);
+      }
+      setRandomizedQuestions(sharedShuffledQuestions);
       setGameStarted(true);
     };
     return (

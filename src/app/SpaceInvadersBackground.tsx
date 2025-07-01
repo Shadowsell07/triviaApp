@@ -36,30 +36,50 @@ export default function SpaceInvadersBackground() {
   const [titleScale, setTitleScale] = useState(0.6);
   const [invaderScore, setInvaderScore] = useState(0);
   const [showGameInstructions, setShowGameInstructions] = useState(true);
+  const [windowSize, setWindowSize] = useState({ width: 1024, height: 768 });
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Set window size on mount and resize
+  useEffect(() => {
+    function updateSize() {
+      setWindowSize({
+        width: typeof window !== 'undefined' ? window.innerWidth : 1024,
+        height: typeof window !== 'undefined' ? window.innerHeight : 768,
+      });
+    }
+    updateSize();
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', updateSize);
+      return () => window.removeEventListener('resize', updateSize);
+    }
+  }, []);
+
+  // Update cannon position if window shrinks
+  useEffect(() => {
+    setCannonX(x => Math.min(x, windowSize.width - 60));
+  }, [windowSize.width]);
 
   // Spawn UFOs
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const interval = setInterval(() => {
       setUfos(prev => [
         ...prev,
-        { x: Math.random() * (window.innerWidth - 32), y: -20, alive: true }
+        { x: Math.random() * (windowSize.width - 32), y: -20, alive: true }
       ]);
     }, 1200);
     return () => clearInterval(interval);
-  }, []);
+  }, [windowSize.width]);
 
   // Move UFOs and lasers
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const move = () => {
       setUfos(prev => prev.map((ufo, idx) => {
-        // Add horizontal oscillation and occasional upward floating
         const t = Date.now() / 900 + idx * 0.7;
-        const floatX = Math.sin(t) * 24; // horizontal oscillation
-        let newX = ufo.x + floatX * 0.04; // slow drift
-        // Clamp to screen
-        newX = Math.max(0, Math.min(window.innerWidth - 32, newX));
-        // Occasionally float up
+        const floatX = Math.sin(t) * 24;
+        let newX = ufo.x + floatX * 0.04;
+        newX = Math.max(0, Math.min(windowSize.width - 32, newX));
         let newY = ufo.y + 2;
         if (Math.random() < 0.01) newY -= 6 * Math.random();
         return { ...ufo, x: newX, y: newY };
@@ -68,7 +88,7 @@ export default function SpaceInvadersBackground() {
     };
     const id = setInterval(move, 30);
     return () => clearInterval(id);
-  }, []);
+  }, [windowSize.width]);
 
   // Collision detection (add explosion)
   useEffect(() => {
@@ -103,53 +123,47 @@ export default function SpaceInvadersBackground() {
 
   // Remove dead UFOs
   useEffect(() => {
-    setUfos(prev => prev.filter(ufo => ufo.alive && ufo.y < window.innerHeight + 40));
-  }, [ufos]);
+    setUfos(prev => prev.filter(ufo => ufo.alive && ufo.y < windowSize.height + 40));
+  }, [ufos, windowSize.height]);
 
   // Keyboard controls
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") setCannonX(x => Math.max(0, x - 36));
-      if (e.key === "ArrowRight") setCannonX(x => Math.min(window.innerWidth - 60, x + 36));
-      if (e.key === " " || e.key === "ArrowUp") {
-        setLasers(prev => [...prev, { x: cannonX + 30, y: window.innerHeight - 48 }]);
+      if (e.key === 'ArrowLeft') setCannonX(x => Math.max(0, x - 36));
+      if (e.key === 'ArrowRight') setCannonX(x => Math.min(windowSize.width - 60, x + 36));
+      if (e.key === ' ' || e.key === 'ArrowUp') {
+        setLasers(prev => [...prev, { x: cannonX + 30, y: windowSize.height - 48 }]);
       }
     };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, [cannonX]);
-
-  // Resize cannon on window resize
-  useEffect(() => {
-    const handleResize = () => {
-      setCannonX(Math.min(cannonX, window.innerWidth - 60));
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [cannonX]);
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [cannonX, windowSize]);
 
   // Initialize stars
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     setStars(Array.from({length: 80}).map(() => ({
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight,
+      x: Math.random() * windowSize.width,
+      y: Math.random() * windowSize.height,
       size: Math.random() * 2 + 1,
-      speed: Math.random() * 0.15 + 0.05, // slower speeds
+      speed: Math.random() * 0.15 + 0.05,
       opacity: Math.random() * 0.7 + 0.3
     })));
-  }, []);
+  }, [windowSize]);
 
-  // Animate stars (slow drift downward)
+  // Animate stars
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const id = setInterval(() => {
       setStars(prev => prev.map(star => {
         let newY = star.y + star.speed;
-        if (newY > window.innerHeight) newY = 0;
+        if (newY > windowSize.height) newY = 0;
         return { ...star, y: newY };
       }));
-    }, 40); // slower update
+    }, 40);
     return () => clearInterval(id);
-  }, []);
+  }, [windowSize.height]);
 
   // Twinkling stars: add a twinkle phase
   useEffect(() => {
@@ -158,16 +172,18 @@ export default function SpaceInvadersBackground() {
   }, []);
 
   // Add Star Wars font import to the head if not already present
-  if (typeof window !== "undefined") {
-    const id = "starwars-font-link";
-    if (!document.getElementById(id)) {
-      const link = document.createElement("link");
-      link.id = id;
-      link.rel = "stylesheet";
-      link.href = "https://fonts.googleapis.com/css2?family=Orbitron:wght@900&display=swap";
-      document.head.appendChild(link);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const id = 'starwars-font-link';
+      if (!document.getElementById(id)) {
+        const link = document.createElement('link');
+        link.id = id;
+        link.rel = 'stylesheet';
+        link.href = 'https://fonts.googleapis.com/css2?family=Orbitron:wght@900&display=swap';
+        document.head.appendChild(link);
+      }
     }
-  }
+  }, []);
 
   // Fade out and hide title after 15 seconds
   useEffect(() => {
@@ -253,8 +269,8 @@ export default function SpaceInvadersBackground() {
       {/* Animated galaxies (rotating) */}
       <svg style={{
         position: "absolute",
-        left: window.innerWidth * 0.15,
-        top: window.innerHeight * 0.18,
+        left: windowSize.width * 0.15,
+        top: windowSize.height * 0.18,
         width: 120,
         height: 60,
         pointerEvents: "none",
@@ -273,8 +289,8 @@ export default function SpaceInvadersBackground() {
       </svg>
       <svg style={{
         position: "absolute",
-        left: window.innerWidth * 0.7,
-        top: window.innerHeight * 0.3,
+        left: windowSize.width * 0.7,
+        top: windowSize.height * 0.3,
         width: 90,
         height: 40,
         pointerEvents: "none",
@@ -294,8 +310,8 @@ export default function SpaceInvadersBackground() {
       {/* Animated nebulae (pulsating) */}
       <svg style={{
         position: "absolute",
-        left: window.innerWidth * 0.4,
-        top: window.innerHeight * 0.6,
+        left: windowSize.width * 0.4,
+        top: windowSize.height * 0.6,
         width: 180,
         height: 90,
         pointerEvents: "none",
@@ -313,8 +329,8 @@ export default function SpaceInvadersBackground() {
       </svg>
       <svg style={{
         position: "absolute",
-        left: window.innerWidth * 0.8,
-        top: window.innerHeight * 0.8,
+        left: windowSize.width * 0.8,
+        top: windowSize.height * 0.8,
         width: 120,
         height: 60,
         pointerEvents: "none",
@@ -338,7 +354,7 @@ export default function SpaceInvadersBackground() {
       {lasers.map((laser, i) => (
         <div key={i} style={{position: "absolute", left: laser.x - 2, top: laser.y, width: 4, height: 16, background: "#fff", borderRadius: 2, boxShadow: "0 0 8px #0ff"}} />
       ))}
-      <div style={{position: "absolute", left: cannonX, top: window.innerHeight - 48, width: 60, height: 36}}>
+      <div style={{position: "absolute", left: cannonX, top: windowSize.height - 48, width: 60, height: 36}}>
         {CANNON}
       </div>
       {/* Explosions */}
