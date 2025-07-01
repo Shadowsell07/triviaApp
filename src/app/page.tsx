@@ -178,6 +178,42 @@ const questions: Question[] = [
     ],
   },
   {
+    text: "Which company developed the Windows operating system?",
+    answers: [
+      { text: "Apple", isCorrect: false },
+      { text: "Microsoft", isCorrect: true },
+      { text: "IBM", isCorrect: false },
+      { text: "Google", isCorrect: false },
+    ],
+  },
+  {
+    text: "What does 'HTTP' stand for?",
+    answers: [
+      { text: "HyperText Transfer Protocol", isCorrect: true },
+      { text: "HighText Transfer Protocol", isCorrect: false },
+      { text: "HyperText Transmission Program", isCorrect: false },
+      { text: "Home Tool Transfer Protocol", isCorrect: false },
+    ],
+  },
+  {
+    text: "Which planet is closest to the sun?",
+    answers: [
+      { text: "Venus", isCorrect: false },
+      { text: "Mercury", isCorrect: true },
+      { text: "Earth", isCorrect: false },
+      { text: "Mars", isCorrect: false },
+    ],
+  },
+  {
+    text: "Who is known as the 'Father of Modern Physics'?",
+    answers: [
+      { text: "Isaac Newton", isCorrect: false },
+      { text: "Albert Einstein", isCorrect: true },
+      { text: "Galileo Galilei", isCorrect: false },
+      { text: "Niels Bohr", isCorrect: false },
+    ],
+  },
+  {
     text: "What is the main ingredient in guacamole?",
     answers: [
       { text: "Tomato", isCorrect: false },
@@ -187,15 +223,250 @@ const questions: Question[] = [
     ],
   },
   {
-    text: "Which gas do plants absorb from the atmosphere?",
+    text: "Which U.S. city is known as the 'Windy City'?",
     answers: [
-      { text: "Oxygen", isCorrect: false },
-      { text: "Carbon Dioxide", isCorrect: true },
-      { text: "Nitrogen", isCorrect: false },
-      { text: "Hydrogen", isCorrect: false },
+      { text: "New York", isCorrect: false },
+      { text: "Chicago", isCorrect: true },
+      { text: "Los Angeles", isCorrect: false },
+      { text: "San Francisco", isCorrect: false },
+    ],
+  },
+  {
+    text: "What is the chemical symbol for potassium?",
+    answers: [
+      { text: "K", isCorrect: true },
+      { text: "P", isCorrect: false },
+      { text: "Pt", isCorrect: false },
+      { text: "Po", isCorrect: false },
+    ],
+  },
+  {
+    text: "Which device is used to measure atmospheric pressure?",
+    answers: [
+      { text: "Thermometer", isCorrect: false },
+      { text: "Barometer", isCorrect: true },
+      { text: "Hygrometer", isCorrect: false },
+      { text: "Anemometer", isCorrect: false },
+    ],
+  },
+  {
+    text: "Who is the author of the Harry Potter series?",
+    answers: [
+      { text: "J.K. Rowling", isCorrect: true },
+      { text: "J.R.R. Tolkien", isCorrect: false },
+      { text: "Stephen King", isCorrect: false },
+      { text: "Suzanne Collins", isCorrect: false },
+    ],
+  },
+  {
+    text: "What is the largest continent by area?",
+    answers: [
+      { text: "Africa", isCorrect: false },
+      { text: "Asia", isCorrect: true },
+      { text: "Europe", isCorrect: false },
+      { text: "North America", isCorrect: false },
+    ],
+  },
+  {
+    text: "Which year did the first man land on the moon?",
+    answers: [
+      { text: "1969", isCorrect: true },
+      { text: "1972", isCorrect: false },
+      { text: "1959", isCorrect: false },
+      { text: "1965", isCorrect: false },
+    ],
+  },
+  {
+    text: "What is the largest internal organ in the human body?",
+    answers: [
+      { text: "Liver", isCorrect: true },
+      { text: "Heart", isCorrect: false },
+      { text: "Lung", isCorrect: false },
+      { text: "Kidney", isCorrect: false },
+    ],
+  },
+  {
+    text: "Which company is known for the iPhone?",
+    answers: [
+      { text: "Apple", isCorrect: true },
+      { text: "Samsung", isCorrect: false },
+      { text: "Google", isCorrect: false },
+      { text: "Microsoft", isCorrect: false },
+    ],
+  },
+  {
+    text: "What is the freezing point of water in Celsius?",
+    answers: [
+      { text: "0", isCorrect: true },
+      { text: "32", isCorrect: false },
+      { text: "100", isCorrect: false },
+      { text: "-10", isCorrect: false },
+    ],
+  },
+  {
+    text: "Who was the first President of the United States?",
+    answers: [
+      { text: "George Washington", isCorrect: true },
+      { text: "Abraham Lincoln", isCorrect: false },
+      { text: "Thomas Jefferson", isCorrect: false },
+      { text: "John Adams", isCorrect: false },
+    ],
+  },
+  {
+    text: "Which element is needed for the production of nuclear energy and weapons?",
+    answers: [
+      { text: "Uranium", isCorrect: true },
+      { text: "Gold", isCorrect: false },
+      { text: "Silver", isCorrect: false },
+      { text: "Copper", isCorrect: false },
+    ],
+  },
+  {
+    text: "What is the main language spoken in Brazil?",
+    answers: [
+      { text: "Portuguese", isCorrect: true },
+      { text: "Spanish", isCorrect: false },
+      { text: "French", isCorrect: false },
+      { text: "English", isCorrect: false },
+    ],
+  },
+  {
+    text: "Which is the smallest US state by area?",
+    answers: [
+      { text: "Rhode Island", isCorrect: true },
+      { text: "Delaware", isCorrect: false },
+      { text: "Connecticut", isCorrect: false },
+      { text: "Vermont", isCorrect: false },
+    ],
+  },
+  {
+    text: "What is the process by which plants make their food?",
+    answers: [
+      { text: "Photosynthesis", isCorrect: true },
+      { text: "Respiration", isCorrect: false },
+      { text: "Transpiration", isCorrect: false },
+      { text: "Fermentation", isCorrect: false },
+    ],
+  },
+  {
+    text: "Who is the CEO of Tesla as of 2025?",
+    answers: [
+      { text: "Elon Musk", isCorrect: true },
+      { text: "Tim Cook", isCorrect: false },
+      { text: "Jeff Bezos", isCorrect: false },
+      { text: "Sundar Pichai", isCorrect: false },
+    ],
+  },
+  {
+    text: "Which country is home to the kangaroo?",
+    answers: [
+      { text: "Australia", isCorrect: true },
+      { text: "India", isCorrect: false },
+      { text: "South Africa", isCorrect: false },
+      { text: "Canada", isCorrect: false },
+    ],
+  },
+  {
+    text: "What is the boiling point of water in Celsius?",
+    answers: [
+      { text: "100", isCorrect: true },
+      { text: "0", isCorrect: false },
+      { text: "50", isCorrect: false },
+      { text: "212", isCorrect: false },
+    ],
+  },
+  {
+    text: "Which instrument measures earthquakes?",
+    answers: [
+      { text: "Seismograph", isCorrect: true },
+      { text: "Barometer", isCorrect: false },
+      { text: "Thermometer", isCorrect: false },
+      { text: "Hygrometer", isCorrect: false },
+    ],
+  },
+  {
+    text: "What is the largest planet in our solar system?",
+    answers: [
+      { text: "Jupiter", isCorrect: true },
+      { text: "Saturn", isCorrect: false },
+      { text: "Earth", isCorrect: false },
+      { text: "Mars", isCorrect: false },
+    ],
+  },
+  {
+    text: "Who wrote the novel '1984'?",
+    answers: [
+      { text: "George Orwell", isCorrect: true },
+      { text: "Aldous Huxley", isCorrect: false },
+      { text: "Ray Bradbury", isCorrect: false },
+      { text: "J.D. Salinger", isCorrect: false },
+    ],
+  },
+  {
+    text: "Which continent has the most countries?",
+    answers: [
+      { text: "Africa", isCorrect: true },
+      { text: "Asia", isCorrect: false },
+      { text: "Europe", isCorrect: false },
+      { text: "South America", isCorrect: false },
+    ],
+  },
+  {
+    text: "What is the main currency of Japan?",
+    answers: [
+      { text: "Yen", isCorrect: true },
+      { text: "Won", isCorrect: false },
+      { text: "Dollar", isCorrect: false },
+      { text: "Euro", isCorrect: false },
+    ],
+  },
+  {
+    text: "Which company owns YouTube?",
+    answers: [
+      { text: "Google", isCorrect: true },
+      { text: "Facebook", isCorrect: false },
+      { text: "Amazon", isCorrect: false },
+      { text: "Apple", isCorrect: false },
+    ],
+  },
+  {
+    text: "What is the capital city of Canada?",
+    answers: [
+      { text: "Toronto", isCorrect: false },
+      { text: "Ottawa", isCorrect: true },
+      { text: "Vancouver", isCorrect: false },
+      { text: "Montreal", isCorrect: false },
+    ],
+  },
+  {
+    text: "Which scientist developed the theory of relativity?",
+    answers: [
+      { text: "Albert Einstein", isCorrect: true },
+      { text: "Isaac Newton", isCorrect: false },
+      { text: "Marie Curie", isCorrect: false },
+      { text: "Nikola Tesla", isCorrect: false },
+    ],
+  },
+  {
+    text: "What is the largest bone in the human body?",
+    answers: [
+      { text: "Femur", isCorrect: true },
+      { text: "Tibia", isCorrect: false },
+      { text: "Humerus", isCorrect: false },
+      { text: "Skull", isCorrect: false },
     ],
   },
 ];
+
+// Shuffle function
+function shuffle<T>(array: T[]): T[] {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
 
 export default function Home() {
   // All hooks at the top
@@ -209,6 +480,7 @@ export default function Home() {
   const [isTimerRunning, setIsTimerRunning] = useState(true);
   const [score, setScore] = useState(0);
   const [answers, setAnswers] = useState<{ [player: string]: number[] }>({});
+  const [randomizedQuestions, setRandomizedQuestions] = useState<Question[]>([]);
 
   useEffect(() => {
     if (timeLeft === 0) {
@@ -268,6 +540,8 @@ export default function Home() {
       setTimeLeft(10);
       setIsTimerRunning(true);
       setScore(0);
+      // Shuffle and select 20 questions
+      setRandomizedQuestions(shuffle(questions).slice(0, 20));
       setGameStarted(true);
     };
     return (
@@ -307,7 +581,7 @@ export default function Home() {
         ...a,
         [playerName]: [...(a[playerName] || []), selectedAnswer]
       }));
-      if (questions[currentQuestion].answers[selectedAnswer].isCorrect) {
+      if (randomizedQuestions[currentQuestion].answers[selectedAnswer].isCorrect) {
         setScore(score + 1);
       }
     }
@@ -317,12 +591,12 @@ export default function Home() {
     setIsTimerRunning(true);
   };
 
-  if (currentQuestion >= questions.length) {
+  if (currentQuestion >= randomizedQuestions.length) {
     // Calculate all scores
     const allScores = Object.entries(answers).map(([name, ans]) => {
       let s = 0;
       for (let i = 0; i < ans.length; i++) {
-        if (questions[i] && questions[i].answers[ans[i]]?.isCorrect) s++;
+        if (randomizedQuestions[i] && randomizedQuestions[i].answers[ans[i]]?.isCorrect) s++;
       }
       return { name, score: s };
     });
@@ -336,7 +610,7 @@ export default function Home() {
           <ul className="mb-4">
             {allScores.map((p, i) => (
               <li key={i} className={p.name === playerName ? 'font-bold text-blue-600' : ''}>
-                {i + 1}. {p.name}: {p.score} / {questions.length}
+                {i + 1}. {p.name}: {p.score} / {randomizedQuestions.length}
               </li>
             ))}
           </ul>
@@ -354,7 +628,7 @@ export default function Home() {
       <div className="bg-white bg-opacity-90 p-8 rounded-lg shadow-lg w-full max-w-2xl relative z-10">
         <div className="flex justify-between items-center mb-6">
           <div className="text-lg font-semibold">
-            Question {currentQuestion + 1}/{questions.length}
+            Question {currentQuestion + 1}/{randomizedQuestions.length}
           </div>
           <div className="text-lg font-semibold">
             Time: {timeLeft}s
@@ -362,11 +636,11 @@ export default function Home() {
         </div>
         
         <div className="mb-8 p-4 bg-gray-50 rounded-lg">
-          <h2 className="text-xl font-bold">{questions[currentQuestion].text}</h2>
+          <h2 className="text-xl font-bold">{randomizedQuestions[currentQuestion].text}</h2>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          {questions[currentQuestion].answers.map((answer, index) => (
+          {randomizedQuestions[currentQuestion].answers.map((answer, index) => (
             <button
               key={index}
               onClick={() => handleAnswerClick(index)}
