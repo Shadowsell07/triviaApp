@@ -197,11 +197,17 @@ const questions: Question[] = [
 ];
 
 export default function Home() {
+  // All hooks at the top
+  const [playerName, setPlayerName] = useState<string>("");
+  const [nameInput, setNameInput] = useState<string>("");
+  const [lobby, setLobby] = useState<string[]>([]);
+  const [gameStarted, setGameStarted] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [timeLeft, setTimeLeft] = useState(10);
   const [isTimerRunning, setIsTimerRunning] = useState(true);
   const [score, setScore] = useState(0);
+  const [answers, setAnswers] = useState<{ [player: string]: number[] }>({});
 
   useEffect(() => {
     if (timeLeft === 0) {
@@ -218,14 +224,81 @@ export default function Home() {
     return () => clearInterval(timer);
   }, [timeLeft, isTimerRunning]);
 
+  // Lobby: Enter name and join
+  if (!playerName && !gameStarted) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md text-center">
+          <h2 className="text-2xl font-bold mb-4">Enter Your Name to Join</h2>
+          <input
+            type="text"
+            value={nameInput}
+            onChange={e => setNameInput(e.target.value)}
+            className="border p-2 rounded w-full mb-4"
+            placeholder="Your name"
+            maxLength={20}
+            disabled={gameStarted}
+          />
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded w-full mb-2 disabled:opacity-50"
+            disabled={!nameInput.trim() || lobby.includes(nameInput.trim())}
+            onClick={() => {
+              const trimmed = nameInput.trim();
+              if (trimmed && !lobby.includes(trimmed)) {
+                setPlayerName(trimmed);
+                setLobby([...lobby, trimmed]);
+                setAnswers(a => ({ ...a, [trimmed]: [] }));
+              }
+            }}
+          >
+            Join Lobby
+          </button>
+          <div className="mt-4 text-left">
+            <div className="font-semibold mb-2">Players in Lobby:</div>
+            <ul>
+              {lobby.map((name, i) => (
+                <li key={i} className="text-gray-700">{name}</li>
+              ))}
+            </ul>
+          </div>
+          <button
+            className="mt-6 bg-green-600 text-white px-4 py-2 rounded w-full disabled:opacity-50"
+            disabled={lobby.length < 1}
+            onClick={() => setGameStarted(true)}
+          >
+            Start Game
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // If not in lobby and game started, block entry
+  if (!playerName && gameStarted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="bg-white p-8 rounded-lg shadow-lg text-center">
+          <h2 className="text-2xl font-bold mb-4">Game In Progress</h2>
+          <p className="text-lg">You can't join right now. Please wait for the next game.</p>
+        </div>
+      </div>
+    );
+  }
+
   const handleAnswerClick = (index: number) => {
     if (!isTimerRunning) return;
     setSelectedAnswer(index);
   };
 
   const handleNextQuestion = () => {
-    if (selectedAnswer !== null && questions[currentQuestion].answers[selectedAnswer].isCorrect) {
-      setScore(score + 1);
+    if (selectedAnswer !== null) {
+      setAnswers(a => ({
+        ...a,
+        [playerName]: [...(a[playerName] || []), selectedAnswer]
+      }));
+      if (questions[currentQuestion].answers[selectedAnswer].isCorrect) {
+        setScore(score + 1);
+      }
     }
     setCurrentQuestion(currentQuestion + 1);
     setSelectedAnswer(null);
@@ -234,11 +307,30 @@ export default function Home() {
   };
 
   if (currentQuestion >= questions.length) {
+    // Calculate all scores
+    const allScores = Object.entries(answers).map(([name, ans]) => {
+      let s = 0;
+      for (let i = 0; i < ans.length; i++) {
+        if (questions[i] && questions[i].answers[ans[i]]?.isCorrect) s++;
+      }
+      return { name, score: s };
+    });
+    allScores.sort((a, b) => b.score - a.score);
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="bg-white p-8 rounded-lg shadow-lg text-center">
           <h2 className="text-2xl font-bold mb-4">Game Over!</h2>
-          <p className="text-xl">Your score: {score} out of {questions.length}</p>
+          <div className="mb-4 text-lg font-semibold">Scores:</div>
+          <ul className="mb-4">
+            {allScores.map((p, i) => (
+              <li key={i} className={p.name === playerName ? 'font-bold text-blue-600' : ''}>
+                {i + 1}. {p.name}: {p.score} / {questions.length}
+              </li>
+            ))}
+          </ul>
+          <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded" onClick={() => window.location.reload()}>
+            Play Again
+          </button>
         </div>
       </div>
     );
