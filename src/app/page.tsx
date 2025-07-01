@@ -253,11 +253,23 @@ export default function Home() {
           >
             Join Lobby
           </button>
-          <div className="mt-4 text-left">
+        </div>
+      </div>
+    );
+  }
+
+  // Show lobby for joined players until game starts
+  if (playerName && !gameStarted) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md text-center">
+          <h2 className="text-2xl font-bold mb-4">Waiting in Lobby</h2>
+          <div className="mb-4">Share this link with your team. When everyone has joined, click Start Game.</div>
+          <div className="text-left mb-4">
             <div className="font-semibold mb-2">Players in Lobby:</div>
             <ul>
               {lobby.map((name, i) => (
-                <li key={i} className="text-gray-700">{name}</li>
+                <li key={i} className={name === playerName ? 'font-bold text-blue-600' : 'text-gray-700'}>{name}</li>
               ))}
             </ul>
           </div>
@@ -268,18 +280,6 @@ export default function Home() {
           >
             Start Game
           </button>
-        </div>
-      </div>
-    );
-  }
-
-  // If not in lobby and game started, block entry
-  if (!playerName && gameStarted) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-          <h2 className="text-2xl font-bold mb-4">Game In Progress</h2>
-          <p className="text-lg">You can't join right now. Please wait for the next game.</p>
         </div>
       </div>
     );
